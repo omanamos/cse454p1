@@ -3,7 +3,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
 
-//
 public class Trainer{
 	public static final Integer ACTOR = 0;
 	public static final Integer BOOK = 1;
@@ -14,6 +13,8 @@ public class Trainer{
 	public static final String[] CLASSES = {"actor", "book", "company", "stadium", "university", "writer"};
 	
 	public final HashMap<String,Integer[]> vocab;
+	private final ArrayList<Integer> denoms;
+	
 	public Float[] prior;
 	public HashMap<String,ArrayList<Float>> condProb;
 	
@@ -22,19 +23,44 @@ public class Trainer{
 		this.condProb = new HashMap<String,ArrayList<Float>>();
 		
 		this.vocab = getVocab(files, classes);
-		this.train(classes);
+		this.denoms = getDenoms(this.vocab);
+		this.train();
 	}
 	
-	public void train(ArrayList<Integer> classes){
+	public void train(){
+		for(String term : vocab.keySet()){
 		
+			if(!this.condProb.containsKey(term)){
+				this.condProb.put(term, new ArrayList<Float>());
+			}
+			
+			Integer[] counts = vocab.get(term);
+			for(int i = 0; i < counts.size(); i++){
+				this.condProb.get(term).add((counts[i] + 1) / this.denoms.get(i));
+			}
+		}
 	}
 	
-	private static HashMap<String,Integer[]> getVocab(ArrayList<File> files, ArrayList<Integer> classes){
+	private static ArrayList<Integer> getDenoms(HashMap<String,Integer[] vocab){
+		ArrayList<Integer> rtn = Utils.initArrLst(CLASSES.length, vocab.size());
+		
+		for(String term : vocab.keySet()){
+			Integer[] counts = vocab.get(term);
+			for(int i = 0; i < counts.size(); i++){
+				rtn.set(i, rtn.get(i) + counts[i]);
+			}
+		}
+	}
+	
+	private HashMap<String,Integer[]> getVocab(ArrayList<File> files, ArrayList<Integer> classes){
 		HashMap<String,Integer[]> rtn = new HashMap<String,Integer[]>();
+		Integer[] classCounts = initIntArr(CLASSES.length, 0);
+		
 		for(int i = 0; i < files.size(); i++){
 			try{
 				Scanner s = new Scanner(files.get(i));
 				Integer c = classes.get(i);
+				classCounts[c]++;
 
 				while(s.hasNextLine()){
 					for(String key : s.nextLine().split(" ")){
@@ -49,6 +75,11 @@ public class Trainer{
 				fe.printStackTrace();
 			}
 		}
+		
+		for(int i = 0; i < classCounts.length; i++){
+			prior[i] = classCounts.get(i) / CLASSES.length;
+		}
+		
 		return rtn;
 	}
 }

@@ -6,4 +6,12 @@ public class Utils {
 		}
 		return rtn;
 	}
+	
+	public static <E> ArrayList<E> initArrLst(int len, E init){
+		ArrayList<String> rtn = new ArrayList<String>();
+		for(int i = 0; i < len; i++){
+			rtn.add(init);
+		}
+		return rtn;
+	}
 }
