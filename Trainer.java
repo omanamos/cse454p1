@@ -3,6 +3,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
 
+//
 public class Trainer{
 	public static final Integer ACTOR = 0;
 	public static final Integer BOOK = 1;
