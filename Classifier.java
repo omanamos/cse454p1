@@ -4,8 +4,6 @@ import java.util.*;
 public class Classifier {
 	Trainer known;
 
-
-	
 	public static int getClass(Trainer t, File f) {
 		return Utils.maxInd(scoreClass(t, f));
 	}
@@ -28,16 +26,23 @@ public class Classifier {
 	}
 	
 	private static Double[] scoreClass(Trainer t, File f) {
-		List<String> tokens = getTokens(f);
+		List<String> tokens = new ArrayList<String>();
+		for(String s : getTokens(f)) {
+			if(!tokens.contains(s))
+				tokens.add(s);
+		}
+		
 		
 		Double[] score = new Double[t.prior.length];
 		for(int i = 0; i < t.prior.length; i++)
 			score[i] = Math.log(t.prior[i]);
 		
-		for(String token : tokens) {
-			for(int i = 0; i < t.CLASSES.length; i++) {
+		
+		
+		for(int i = 0; i < t.CLASSES.length; i++) {
+			for(String token : tokens) {
 				if(t.vocab.containsKey(token)) { 
-					score[i] += Math.log(t.vocab.get(token)[i]);
+					score[i] += Math.log(t.condProb.get(token).get(i));
 				}
 			}
 		}
