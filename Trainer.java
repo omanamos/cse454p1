@@ -12,6 +12,7 @@ public class Trainer{
 	public static final Integer WRITER = 5;
 	public static final String[] CLASSES = {"actor", "book", "company", "stadium", "university", "writer"};
 	
+	
 	public final HashMap<String,Integer[]> vocab;
 	private final ArrayList<Integer> denoms;
 	
@@ -21,6 +22,8 @@ public class Trainer{
 	public Trainer(ArrayList<File> files, ArrayList<Integer> classes){
 		this.prior = new Double[CLASSES.length];
 		this.condProb = new HashMap<String,ArrayList<Double>>();
+	
+		// TEMP
 		
 		this.vocab = getVocab(files, classes);
 		this.denoms = getDenoms(this.vocab);
@@ -43,7 +46,7 @@ public class Trainer{
 	
 	private static ArrayList<Integer> getDenoms(HashMap<String,Integer[]> vocab){
 		ArrayList<Integer> rtn = Utils.initArrLst(CLASSES.length, vocab.size());
-		
+
 		for(String term : vocab.keySet()){
 			Integer[] counts = vocab.get(term);
 			for(int i = 0; i < counts.length; i++){

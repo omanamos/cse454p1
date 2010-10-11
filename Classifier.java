@@ -4,27 +4,39 @@ import java.util.*;
 public class Classifier {
 	Trainer known;
 
-	public static void main(String[] args) {
-		
-		/*
-		
-		For each (class) in (Set of classes)
-		 
-		*/
-		
-		System.out.println("TEST");
+
+	
+	public static int getClass(Trainer t, File f) {
+		return Utils.maxInd(scoreClass(t, f));
 	}
 	
-	private static List<String> getTokens(String file) {
+	private static List<String> getTokens(File f) {
 		List<String> tokens = new ArrayList<String>();
 		
-        Scanner s = new Scanner(file);
-        while(s.hasNextLine()) {
-        	for(String token : s.nextLine().split(" ")) {
-        		tokens.add(token);
-        	}
-        }
+		try {
+	        Scanner s = new Scanner(f);
+	        
+	        while(s.hasNextLine()) {
+	        	for(String token : s.nextLine().split(" ")) {
+	        		tokens.add(token);
+	        	}
+	        }
+		} catch(FileNotFoundException fe) {
+			fe.printStackTrace();
+		}
         return tokens;
+	}
+	
+	private static Double[] scoreClass(Trainer t, File f) {
+		List<String> tokens = getTokens(f);
+		
+		Double[] score = new Double[t.CLASSES.length];
+		for(String token : tokens) {
+			for(int i = 0; i < t.CLASSES.length; i++) {
+				score[i] += t.vocab.get(token)[i];
+			}
+		}
+		return score;
 	}
 
 /*		HashMap<String,Integer[]> rtn = new HashMap<String,Integer[]>();
