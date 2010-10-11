@@ -7,32 +7,38 @@ public class Main{
 	}
 	
 	public static void test(){
-		ArrayList<File> files = new ArrayList<File>();
-		ArrayList<Integer> classes = new ArrayList<Integer>();
+		ArrayList<ArrayList<File>> files = new ArrayList<ArrayList<File>>();
 		
 		for(int className = 0; className < Trainer.CLASSES.length; className++){
-			loadClass(className, files, classes);
+			files.add(loadClass(className));
 		}
 		
 		int incr = 10;
+		int maxClassSize = 200;
+		
 		int start = 0;
 		int end = incr;
 		
-		while(start < files.size() && end < files.size()){
+		while(end < maxClassSize){
 			ArrayList<File> trainingFiles = new ArrayList<File>();
 			ArrayList<Integer> trainingClasses = new ArrayList<Integer>();
 			ArrayList<File> unknowns = new ArrayList<File>();
 			
+			for(int className = 0; className < files.size(); className++){
+				ArrayList<File> curFiles = files.get(className);
+				for(int i = 0; i < curFiles.size(); i++){
+					if(i < start || i >= end){
+						trainingFiles.add(curFiles.get(i));
+						trainingClasses.add(className);
+					}else{
+						unknowns.add(curFiles.get(i));
+					}
+				}
+			}
+			
 			String[] results = execute(trainingFiles, trainingClasses, unknowns);
-			
 			System.out.println(buildString(unknowns, results));
-			System.out.println();
-			
-			start = end;
-			end += incr;
 		}
-		
-		return;
 	}
 	
 	private static String buildString(ArrayList<File> files, String[] results){
@@ -48,17 +54,18 @@ public class Main{
 		
 		String[] rtn = new String[unknowns.size()]; 
 		for(int i = 0; i < rtn.length; i++){
-			rtn[i] = Trainer.CLASSES[Classifier.classify(t, unknowns.get(i))];
+			rtn[i] = Trainer.CLASSES[Classifier.getClass(t, unknowns.get(i))];
 		}
 		return rtn;
 	}
 	
-	private static void loadClass(Integer className, ArrayList<File> fileLst, ArrayList<Integer> classes){
+	private static ArrayList<File> loadClass(Integer className){
+		ArrayList<File> rtn = new ArrayList<File>();
 		File folder = new File("classifier_data_small_train/" + Trainer.CLASSES[className] + "/train");
 		File[] files = folder.listFiles();
 		for(File f : files){
-			fileLst.add(f);
-			classes.add(className);
+			rtn.add(f);
 		}
+		return rtn;
 	}
 }
