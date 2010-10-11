@@ -15,12 +15,12 @@ public class Trainer{
 	public final HashMap<String,Integer[]> vocab;
 	private final ArrayList<Integer> denoms;
 	
-	public Float[] prior;
-	public HashMap<String,ArrayList<Float>> condProb;
+	public Double[] prior;
+	public HashMap<String,ArrayList<Double>> condProb;
 	
 	public Trainer(ArrayList<File> files, ArrayList<Integer> classes){
-		this.prior = new Float[CLASSES.length];
-		this.condProb = new HashMap<String,ArrayList<Float>>();
+		this.prior = new Double[CLASSES.length];
+		this.condProb = new HashMap<String,ArrayList<Double>>();
 		
 		this.vocab = getVocab(files, classes);
 		this.denoms = getDenoms(this.vocab);
@@ -31,12 +31,12 @@ public class Trainer{
 		for(String term : vocab.keySet()){
 		
 			if(!this.condProb.containsKey(term)){
-				this.condProb.put(term, new ArrayList<Float>());
+				this.condProb.put(term, new ArrayList<Double>());
 			}
 			
 			Integer[] counts = vocab.get(term);
 			for(int i = 0; i < counts.length; i++){
-				this.condProb.get(term).add(((float)(counts[i] + 1)) / this.denoms.get(i));
+				this.condProb.get(term).add(((double)(counts[i] + 1)) / this.denoms.get(i));
 			}
 		}
 	}
@@ -80,7 +80,7 @@ public class Trainer{
 		}
 		
 		for(int i = 0; i < classCounts.length; i++){
-			prior[i] = ((float)classCounts[i]) / classTotal;
+			prior[i] = ((double)classCounts[i]) / classTotal;
 		}
 		
 		return rtn;

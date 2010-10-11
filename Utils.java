@@ -16,4 +16,16 @@ public class Utils {
 		}
 		return rtn;
 	}
+	
+	public static int maxInd(Double[] arr){
+		int maxInd = 0;
+		Double max = arr[0];
+		for(int i = 0; i < arr.length; i++){
+			if(arr[i] > max){
+				maxInd = i;
+				max = arr[i];
+			}
+		}
+		return maxInd;
+	}
 }
