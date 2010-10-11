@@ -13,7 +13,7 @@ public class Main{
 			files.add(loadClass(className));
 		}
 		
-		int incr = 10;
+		int incr = 20;
 		int maxClassSize = 200;
 		
 		int start = 0;
@@ -38,6 +38,8 @@ public class Main{
 			
 			String[] results = execute(trainingFiles, trainingClasses, unknowns);
 			System.out.println(buildString(unknowns, results));
+			start = end;
+			end += incr;
 		}
 	}
 	

@@ -30,44 +30,17 @@ public class Classifier {
 	private static Double[] scoreClass(Trainer t, File f) {
 		List<String> tokens = getTokens(f);
 		
-		Double[] score = new Double[t.CLASSES.length];
+		Double[] score = new Double[t.prior.length];
+		for(int i = 0; i < t.prior.length; i++)
+			score[i] = Math.log(t.prior[i]);
+		
 		for(String token : tokens) {
 			for(int i = 0; i < t.CLASSES.length; i++) {
-				score[i] += t.vocab.get(token)[i];
+				if(t.vocab.containsKey(token)) { 
+					score[i] += Math.log(t.vocab.get(token)[i]);
+				}
 			}
 		}
 		return score;
 	}
-
-/*		HashMap<String,Integer[]> rtn = new HashMap<String,Integer[]>();
-		Integer[] classCounts = Utils.initIntArr(CLASSES.length, 0);
-		int classTotal = 0;
-		
-		for(int i = 0; i < files.size(); i++){
-			try{
-				Scanner s = new Scanner(files.get(i));
-				Integer c = classes.get(i);
-				classCounts[c]++;
-				classTotal++;
-
-				while(s.hasNextLine()){
-					for(String key : s.nextLine().split(" ")){
-						if(!rtn.containsKey(key)){
-							rtn.put(key, Utils.initIntArr(CLASSES.length, 0));
-						}
-						rtn.get(key)[c] += 1;
-					}
-				}
-				s.close();
-			}catch(FileNotFoundException fe){
-				fe.printStackTrace();
-			}
-		}
-		
-		for(int i = 0; i < classCounts.length; i++){
-			prior[i] = ((float)classCounts[i]) / classTotal;
-		}
-		
-		return rtn;
-	} */
 }
