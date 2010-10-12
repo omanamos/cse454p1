@@ -42,13 +42,19 @@ public class Main{
 		int incr = 20;
 		int maxClassSize = 200;
 		
+		int count = 0;
 		int start = 0;
 		int end = incr;
+		
+		Integer[] numCorrect = Utils.initIntArr(Trainer.CLASSES.length, 0);
+		Integer[] numGuesses = Utils.initIntArr(Trainer.CLASSES.length, 0);
+		Integer[] numDocs = Utils.initIntArr(Trainer.CLASSES.length, 0);
 		
 		while(end < maxClassSize){
 			ArrayList<File> trainingFiles = new ArrayList<File>();
 			ArrayList<Integer> trainingClasses = new ArrayList<Integer>();
 			ArrayList<File> unknowns = new ArrayList<File>();
+			ArrayList<Integer> unknownClasses = new ArrayList<Integer>();
 			
 			for(int className = 0; className < files.size(); className++){
 				ArrayList<File> curFiles = files.get(className);
@@ -58,14 +64,28 @@ public class Main{
 						trainingClasses.add(className);
 					}else{
 						unknowns.add(curFiles.get(i));
+						unknownClasses.add(className);
 					}
 				}
 			}
 			
-			String[] results = execute(trainingFiles, trainingClasses, unknowns);
-			System.out.println(buildString(unknowns, results));
+			int[] results = execute(trainingFiles, trainingClasses, unknowns);
+			for(int i = 0; i < results.length; i++){
+				if(results[i] == unknownClasses.get(i))
+					numCorrect[results[i]]++;
+				numGuesses[results[i]]++;
+				numDocs[unknownClasses.get(i)]++;
+			}
+			
 			start = end;
 			end += incr;
+		}
+		
+		for(int i = 0; i < Trainer.CLASSES.length; i++){
+			double precision = ((double)numCorrect[i]) / numGuesses[i];
+			System.out.println("Precision(" + Trainer.CLASSES[i] + "): " + precision);
+			double recall = ((double)numCorrect[i]) / numDocs[i];
+			System.out.println("Recall(" + Trainer.CLASSES[i] + "): " + recall);
 		}
 	}
 	
@@ -77,12 +97,12 @@ public class Main{
 		return rtn;
 	}
 	
-	private static String[] execute(ArrayList<File> trainingFiles, ArrayList<Integer> trainingClasses, ArrayList<File> unknowns){
+	private static int[] execute(ArrayList<File> trainingFiles, ArrayList<Integer> trainingClasses, ArrayList<File> unknowns){
 		Trainer t = new Trainer(trainingFiles, trainingClasses);
 		
-		String[] rtn = new String[unknowns.size()]; 
+		int[] rtn = new int[unknowns.size()]; 
 		for(int i = 0; i < rtn.length; i++){
-			rtn[i] = Trainer.CLASSES[Classifier.getClass(t, unknowns.get(i))];
+			rtn[i] = Classifier.getClass(t, unknowns.get(i));
 		}
 		return rtn;
 	}
