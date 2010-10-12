@@ -6,15 +6,22 @@ import java.util.ArrayList;
 
 public class Main{
 	public static void main(String[] args){
-		//test();
+		String training = "classifier_data_small_train";
+		String testing = "classifier_data_test";
 		
-		testFolder("classifier_data_test");
+		if(args.length == 3) {
+			training = args[1];
+			testing = args[2];
+		} else {
+			System.out.println("No parameters passed.\n\nFolders are assumed to be:\nTraining data: " + training + "\nTesting data: " + testing);
+		}
+		testFolder(training, testing);
 	}
 	
-	public static void testFolder(String folderName) {
+	public static void testFolder(String training, String testing) {
 		ArrayList<File> files = new ArrayList<File>();
 		
-		File folder = new File(folderName);
+		File folder = new File(testing);
 		File[] fileList = folder.listFiles();
 		for(File f : fileList){
 			files.add(f);
@@ -24,7 +31,7 @@ public class Main{
 		ArrayList<File> trainingFiles = new ArrayList<File>();
 		
 		for(int i = 0; i < Trainer.CLASSES.length; i++) {
-			ArrayList<File> temp = loadClass(i);
+			ArrayList<File> temp = loadClass(training, i);
 			
 			for(File f : temp) {
 				trainingFiles.add(f);
@@ -44,11 +51,11 @@ public class Main{
 		}
 	}
 	
-	public static void test(){
+	public static void test(String training){
 		ArrayList<ArrayList<File>> files = new ArrayList<ArrayList<File>>();
 		
 		for(int className = 0; className < Trainer.CLASSES.length; className++){
-			files.add(loadClass(className));
+			files.add(loadClass(training, className));
 		}
 		
 		int incr = 20;
@@ -119,9 +126,9 @@ public class Main{
 		return rtn;
 	}
 	
-	private static ArrayList<File> loadClass(Integer className){
+	private static ArrayList<File> loadClass(String trainingFolder, Integer className){
 		ArrayList<File> rtn = new ArrayList<File>();
-		File folder = new File("classifier_data_small_train/" + Trainer.CLASSES[className] + "/train");
+		File folder = new File(trainingFolder + "/" + Trainer.CLASSES[className] + "/train");
 		File[] files = folder.listFiles();
 		for(File f : files){
 			rtn.add(f);
