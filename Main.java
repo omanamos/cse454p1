@@ -3,14 +3,32 @@ import java.util.ArrayList;
 
 public class Main{
 	public static void main(String[] args){
-		test();
+		//test();
+		
+		test2("classifier_data_test");
 	}
 	
-	public static void test2() {
+	public static void testFolder(String folderName) {
 		ArrayList<File> files = new ArrayList<File>();
 		
-		for(int className = 0; className < Trainer.CLASSES.length; className++){
-			files = loadClass(className);
+		File folder = new File(folderName);
+		File[] fileList = folder.listFiles();
+		for(File f : fileList){
+			files.add(f);
+		}
+		
+		ArrayList<Integer> trainingClasses = new ArrayList<Integer>();
+		ArrayList<File> trainingFiles = new ArrayList<File>();
+		
+		for(int i = 0; i < Trainer.CLASSES.length; i++) {
+			ArrayList<File> temp = loadClass(i);
+			
+			for(File f : temp) {
+				trainingFiles.add(f);
+				trainingClasses.add(i);
+			}
+			
+			
 		}
 	}
 	
