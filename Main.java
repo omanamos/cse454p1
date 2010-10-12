@@ -1,11 +1,14 @@
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 
 public class Main{
 	public static void main(String[] args){
 		//test();
 		
-		test2("classifier_data_test");
+		testFolder("classifier_data_test");
 	}
 	
 	public static void testFolder(String folderName) {
@@ -27,8 +30,17 @@ public class Main{
 				trainingFiles.add(f);
 				trainingClasses.add(i);
 			}
-			
-			
+		}
+		
+		int[] results = execute(trainingFiles, trainingClasses, files);
+		try {
+			FileOutputStream fs = new FileOutputStream("test.output");
+			OutputStreamWriter out = new OutputStreamWriter(fs, "UTF-8");
+			for(int i = 0; i < results.length; i++) {
+				out.write(files.get(i).getName() + "|" + Trainer.CLASSES[results[i]] + "\n");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 	
