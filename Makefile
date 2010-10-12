@@ -9,6 +9,8 @@ CLASSES = Main.java Classifier.java Trainer.java Utils.java
 
 default: classes
 
-classes: $(CLASSES:.java=.class)
+classes:
+	javac $(CLASSES)
 
-clean: $(RM) *.class
+clean:
+	rm *.class
