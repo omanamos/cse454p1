@@ -6,6 +6,14 @@ public class Main{
 		test();
 	}
 	
+	public static void test2() {
+		ArrayList<File> files = new ArrayList<File>();
+		
+		for(int className = 0; className < Trainer.CLASSES.length; className++){
+			files = loadClass(className);
+		}
+	}
+	
 	public static void test(){
 		ArrayList<ArrayList<File>> files = new ArrayList<ArrayList<File>>();
 		
