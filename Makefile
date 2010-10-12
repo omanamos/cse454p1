@@ -3,18 +3,12 @@ JC = javac
 .SUFFIXES: .java .class
 
 .java.class:
-        $(JC) $(JFLAGS) $*.java
+	$(JC) $(JFLAGS) $*.java
 
-CLASSES = \
-        Foo.java \
-        Blah.java \
-        Library.java \
-        Main.java 
+CLASSES = Main.java Classifier.java Trainer.java Utils.java
 
 default: classes
 
 classes: $(CLASSES:.java=.class)
 
-clean:
-        $(RM) *.class
-
+clean: $(RM) *.class

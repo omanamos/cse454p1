@@ -28,7 +28,7 @@ public class Classifier {
 	        Scanner s = new Scanner(f);
 	        while(s.hasNextLine()) {
 	        	for(String token : s.nextLine().split(" ")) {
-	        		if(!tokens.contains(s))
+	        		//if(!tokens.contains(token))
 	        			tokens.add(token);
 	        	}
 	        }
@@ -60,6 +60,7 @@ public class Classifier {
 			for(String token : tokens) {
 				if(t.vocab.containsKey(token)) { // make sure we actually saw the token when we were checking the class 
 					// score[c] += log condprob[t][c]
+					// DEBUGGING - System.out.println(i + " " + token + " " + t.condProb.get(token).get(i));
 					score[i] += Math.log(t.condProb.get(token).get(i));
 				}
 			}

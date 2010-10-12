@@ -9,9 +9,9 @@ public class Main{
 		String training = "classifier_data_small_train";
 		String testing = "classifier_data_test";
 		
-		if(args.length == 3) {
-			training = args[1];
-			testing = args[2];
+		if(args.length == 2) {
+			training = args[0];
+			testing = args[1];
 		} else {
 			System.out.println("No parameters passed.\n\nFolders are assumed to be:\nTraining data: " + training + "\nTesting data: " + testing);
 		}
