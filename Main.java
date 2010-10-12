@@ -13,7 +13,7 @@ public class Main{
 			training = args[0];
 			testing = args[1];
 		} else {
-			System.out.println("No parameters passed.\n\nFolders are assumed to be:\nTraining data: " + training + "\nTesting data: " + testing);
+			System.out.println("No parameters passed.\n\nFolders are assumed to be:\nTraining data: " + training + "\nTesting data: " + testing + "\n");
 		}
 		try{
 			testFolder(training, testing);
@@ -27,9 +27,21 @@ public class Main{
 	 * Used to perform general testing
 	 * @param training location of training data
 	 * @param testing locations of testing data
-	 * @throws FileNotFoundException
+	 * @throws FileNotFoundException 
 	 */
 	public static void testFolder(String training, String testing) throws FileNotFoundException {
+		// Make sure passed directories exist and are directories
+		File tempFile = new File(training);
+		if(!tempFile.exists() || !tempFile.isDirectory()) {
+			System.err.println(training + " doesn't exist or isn't a directory!\n");
+			System.exit(1);
+		}
+		tempFile = new File(testing);
+		if(!tempFile.exists() || !tempFile.isDirectory()) {
+			System.err.println(testing + " doesn't exist or isn't a directory!\n");
+			System.exit(1);
+		}
+		
 		ArrayList<File> files = new ArrayList<File>();
 		
 		File folder = new File(testing);
