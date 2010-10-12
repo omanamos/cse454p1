@@ -1,14 +1,5 @@
-GS = -g
-JC = javac
-.SUFFIXES: .java .class
+default:
+	javac Main.java Classifier.java Trainer.java Utils.java
 
-.java.class:
-	$(JC) $(JFLAGS) $*.java
-
-CLASSES = Main.java Classifier.java Trainer.java Utils.java
-
-default: classes
-
-classes: $(CLASSES:.java=.class)
-
-clean: $(RM) *.class
+clean:
+	rm -f Main.class Classifier.class Trainer.class Utils.class

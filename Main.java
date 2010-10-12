@@ -15,10 +15,21 @@ public class Main{
 		} else {
 			System.out.println("No parameters passed.\n\nFolders are assumed to be:\nTraining data: " + training + "\nTesting data: " + testing);
 		}
-		testFolder(training, testing);
+		try{
+			testFolder(training, testing);
+			//test(training); for performing 10 fold testing
+		}catch(FileNotFoundException e){
+			System.out.println("ERROR: " + e.getMessage());
+		}
 	}
 	
-	public static void testFolder(String training, String testing) {
+	/**
+	 * Used to perform general testing
+	 * @param training location of training data
+	 * @param testing locations of testing data
+	 * @throws FileNotFoundException
+	 */
+	public static void testFolder(String training, String testing) throws FileNotFoundException {
 		ArrayList<File> files = new ArrayList<File>();
 		
 		File folder = new File(testing);
@@ -44,14 +55,20 @@ public class Main{
 			FileOutputStream fs = new FileOutputStream("test.output");
 			OutputStreamWriter out = new OutputStreamWriter(fs, "UTF-8");
 			for(int i = 0; i < results.length; i++) {
-				out.write(files.get(i).getName() + "|" + Trainer.CLASSES[results[i]] + "\n");
+				out.write(files.get(i).getName() + "|" + Trainer.CLASSES[results[i]].toUpperCase() + "\n");
+				out.flush();
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 	
-	public static void test(String training){
+	/**
+	 * Used for performing 10 fold testing
+	 * @param training location of training data
+	 * @throws FileNotFoundException
+	 */
+	public static void test(String training) throws FileNotFoundException{
 		ArrayList<ArrayList<File>> files = new ArrayList<ArrayList<File>>();
 		
 		for(int className = 0; className < Trainer.CLASSES.length; className++){
@@ -61,15 +78,15 @@ public class Main{
 		int incr = 20;
 		int maxClassSize = 200;
 		
-		int count = 0;
+		int count = 1;
 		int start = 0;
 		int end = incr;
 		
-		Integer[] numCorrect = Utils.initIntArr(Trainer.CLASSES.length, 0);
-		Integer[] numGuesses = Utils.initIntArr(Trainer.CLASSES.length, 0);
-		Integer[] numDocs = Utils.initIntArr(Trainer.CLASSES.length, 0);
+		Integer[] totalCorrect = Utils.initIntArr(Trainer.CLASSES.length, 0);
+		Integer[] totalGuesses = Utils.initIntArr(Trainer.CLASSES.length, 0);
+		Integer[] totalDocs = Utils.initIntArr(Trainer.CLASSES.length, 0);
 		
-		while(end < maxClassSize){
+		while(start < maxClassSize){
 			ArrayList<File> trainingFiles = new ArrayList<File>();
 			ArrayList<Integer> trainingClasses = new ArrayList<Integer>();
 			ArrayList<File> unknowns = new ArrayList<File>();
@@ -89,31 +106,30 @@ public class Main{
 			}
 			
 			int[] results = execute(trainingFiles, trainingClasses, unknowns);
-			for(int i = 0; i < results.length; i++){
-				if(results[i] == unknownClasses.get(i))
-					numCorrect[results[i]]++;
-				numGuesses[results[i]]++;
-				numDocs[unknownClasses.get(i)]++;
-			}
 			
+			Integer[] curNumCorrect = Utils.initIntArr(Trainer.CLASSES.length, 0);
+			Integer[] curNumGuesses = Utils.initIntArr(Trainer.CLASSES.length, 0);
+			Integer[] curNumDocs = Utils.initIntArr(Trainer.CLASSES.length, 0);
+			
+			for(int i = 0; i < results.length; i++){
+				if(results[i] == unknownClasses.get(i)){
+					totalCorrect[results[i]]++;
+					curNumCorrect[results[i]]++;
+				}
+				curNumGuesses[results[i]]++;
+				curNumDocs[unknownClasses.get(i)]++;
+				
+				totalGuesses[results[i]]++;
+				totalDocs[unknownClasses.get(i)]++;
+			}
+			Utils.printTable("FOLD " + count, curNumCorrect, curNumGuesses, curNumDocs);
+			
+			count++;
 			start = end;
 			end += incr;
 		}
 		
-		for(int i = 0; i < Trainer.CLASSES.length; i++){
-			double precision = ((double)numCorrect[i]) / numGuesses[i];
-			System.out.println("Precision(" + Trainer.CLASSES[i] + "): " + precision);
-			double recall = ((double)numCorrect[i]) / numDocs[i];
-			System.out.println("Recall(" + Trainer.CLASSES[i] + "): " + recall);
-		}
-	}
-	
-	private static String buildString(ArrayList<File> files, String[] results){
-		String rtn = "";
-		for(int i = 0; i < files.size(); i++){
-			rtn += files.get(i).getName() + "|" + results[i] + "\n";
-		}
-		return rtn;
+		Utils.printTable("FINAL", totalCorrect, totalGuesses, totalDocs);
 	}
 	
 	private static int[] execute(ArrayList<File> trainingFiles, ArrayList<Integer> trainingClasses, ArrayList<File> unknowns){
@@ -126,13 +142,17 @@ public class Main{
 		return rtn;
 	}
 	
-	private static ArrayList<File> loadClass(String trainingFolder, Integer className){
+	private static ArrayList<File> loadClass(String trainingFolder, Integer className) throws FileNotFoundException{
 		ArrayList<File> rtn = new ArrayList<File>();
 		File folder = new File(trainingFolder + "/" + Trainer.CLASSES[className] + "/train");
 		File[] files = folder.listFiles();
-		for(File f : files){
+		
+		if(files == null)
+			throw new FileNotFoundException(trainingFolder + " does not contain valid training data.");
+		
+		for(File f : files)
 			rtn.add(f);
-		}
+		
 		return rtn;
 	}
 }
